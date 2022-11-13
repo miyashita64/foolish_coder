@@ -4,9 +4,7 @@ TARGET_PROJECT_TEST_PATH = ${TARGET_PROJECT_PATH}/test
 BUILD_SPACE_PATH = ${TARGET_PROJECT_PATH}/build
 
 run:
-	@mkdir -p build
-	cd build && cmake .. && cmake --build . && ./main
-	@rm -rf build
+	python3 -Bm src
 
 target_test:
 	@rm -rf ${BUILD_SPACE_PATH}
