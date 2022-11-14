@@ -5,8 +5,10 @@
  */
 
 #include "gtest/gtest.h"
+#include "FoolishCoder.h"
 
-namespace foolish_coder{
+namespace foolish_coder
+{
     TEST(unexist_class_test, test_create_class)
     {
         int expected = 0;
