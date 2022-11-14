@@ -4,5 +4,10 @@
 @author miyashita64
 """
 
-print("Foolish coding...")
-print("Complete!")
+from src.file_reader import FileReader
+
+print("\nFoolish coding...\n")
+
+FileReader.read_latest_build_log()
+
+print("\nComplete!!\n")
