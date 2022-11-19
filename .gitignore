@@ -1,3 +1,5 @@
 target_project/build/
 target_project/logs/
 download/
+results/*.h
+results/*.cpp

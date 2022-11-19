@@ -1,4 +1,5 @@
 MAKEFILE_PATH = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+FOOLISH_WORK_LINK = ${MAKEFILE_PATH}/results
 TARGET_PROJECT_PATH = ${MAKEFILE_PATH}/target_project
 TARGET_PROJECT_SOURCE_PATH = ${TARGET_PROJECT_PATH}/src
 TARGET_PROJECT_TEST_PATH = ${TARGET_PROJECT_PATH}/test
@@ -8,6 +9,7 @@ EXECUTE_LOG_PATH = ${TARGET_PROJECT_PATH}/results
 TIMESTAMP = $(shell date +%Y%m%d%H%M%S)
 
 run:
+	@make ptest || :
 	@python3 -Bm src
 
 ptest:
@@ -19,6 +21,9 @@ ifneq ($(wildcard ${TARGET_PROJECT_SOURCE_PATH}/*), )
 endif
 ifneq ($(wildcard ${TARGET_PROJECT_TEST_PATH}/*), )
 	@cp -rp ${TARGET_PROJECT_TEST_PATH}/* ${BUILD_SPACE_PATH}
+endif
+ifneq ($(wildcard ${FOOLISH_WORK_LINK}/*), )
+	@cp -rp ${FOOLISH_WORK_LINK}/* ${BUILD_SPACE_PATH}
 endif
 	cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH}
 	@mkdir -p ${BUILD_LOG_PATH}

@@ -9,7 +9,7 @@
 
 namespace foolish_coder
 {
-    TEST(unexist_class_test, test_create_class)
+    TEST(FoolishCoderTest, CreateHeaderFileTest)
     {
         int expected = 0;
         ASSERT_EQ(expected, FoolishCoder::start());
