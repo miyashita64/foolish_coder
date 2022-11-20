@@ -1,6 +1,6 @@
 /**
- * @file   UnExistTest.cpp
- * @brief  存在しないクラスのテスト
+ * @file   FoolishCoderTest.cpp
+ * @brief  FoolishCoderのテスト
  * @author miyashita64
  */
 
@@ -9,6 +9,7 @@
 
 namespace foolish_coder
 {
+    // 存在しない静的メソッドが実行された場合のテスト
     TEST(FoolishCoderTest, CreateHeaderFileTest)
     {
         int expected = 0;
