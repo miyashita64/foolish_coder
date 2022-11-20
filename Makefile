@@ -1,12 +1,21 @@
-MAKEFILE_PATH = $(dir $(abspath $(lastword $(MAKEFILE_LIST)))) # 自身(Makefile)があるディレクトリの絶対パス
-FOOLISH_WORK_LINK = ${MAKEFILE_PATH}/results				# FoolishCoderが生成したファイルを格納するパス
-TARGET_PROJECT_PATH = ${MAKEFILE_PATH}/target_project		# FoolishCoderの対象プロジェクトのパス
-TARGET_PROJECT_SOURCE_PATH = ${TARGET_PROJECT_PATH}/src		# 対象プロジェクトのソースコードのディレクトリパス
-TARGET_PROJECT_TEST_PATH = ${TARGET_PROJECT_PATH}/test		# 対象プロジェクトのテストコードのディレクトリパス
-BUILD_SPACE_PATH = ${TARGET_PROJECT_PATH}/build				# FoolishCoderがテストを実行する際にファイルを展開するパス
-BUILD_LOG_PATH = ${TARGET_PROJECT_PATH}/logs				# FoolishCoderがビルド・テストのログを格納するパス
-EXECUTE_LOG_PATH = ${TARGET_PROJECT_PATH}/results			# FoolishCoderが編集後のプロジェクトを実行ログを格納するパス
-TIMESTAMP = $(shell date +%Y%m%d%H%M%S)						# 実行時刻
+# 自身(Makefile)があるディレクトリの絶対パス
+MAKEFILE_PATH = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+# FoolishCoderが生成したファイルを格納するパス
+FOOLISH_WORK_LINK = ${MAKEFILE_PATH}/results
+# FoolishCoderの対象プロジェクトのパス
+TARGET_PROJECT_PATH = ${MAKEFILE_PATH}/target_project
+# 対象プロジェクトのソースコードのディレクトリパス
+TARGET_PROJECT_SOURCE_PATH = ${TARGET_PROJECT_PATH}/src
+# 対象プロジェクトのテストコードのディレクトリパス
+TARGET_PROJECT_TEST_PATH = ${TARGET_PROJECT_PATH}/test
+# FoolishCoderがテストを実行する際にファイルを展開するパス
+BUILD_SPACE_PATH = ${TARGET_PROJECT_PATH}/build
+# FoolishCoderがビルド・テストのログを格納するパス
+BUILD_LOG_PATH = ${TARGET_PROJECT_PATH}/logs
+# FoolishCoderが編集後のプロジェクトを実行ログを格納するパス
+EXECUTE_LOG_PATH = ${TARGET_PROJECT_PATH}/results
+# 実行時刻
+TIMESTAMP = $(shell date +%Y%m%d%H%M%S)
 
 run:
 	@make ptest || :
