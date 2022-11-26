@@ -25,7 +25,7 @@ class FileReader:
 
     @staticmethod
     def get_no_such_file_error():
-        """ファイルが見つからない場合のエラーを取得する."""
+        """未発見エラーを起こしたファイルのリストを返す."""
         latest_build_log = FileReader.read_latest_build_log()
         errors = latest_build_log.split("No such file")
         if len(errors) <= 1:
@@ -37,3 +37,16 @@ class FileReader:
                 break
             no_file_names += [error.split("fatal error: ")[-1].split(":")[0]]
         return no_file_names
+
+    @staticmethod
+    def get_not_declared_class_error():
+        """未定義エラーを起こしたクラスのリストを返す."""
+        latest_build_log = FileReader.read_latest_build_log()
+        no_declared_classes = []
+        for row in latest_build_log.split("\n"):
+            if "error: " in row and "has not been declared" in row:
+                no_declared_class = row.split("error: ‘")[1].split("’ has not been declared")[0]
+                no_declared_classes.append(no_declared_class)
+        if no_declared_classes == []:
+            print("no error \"has not been declared\".")
+        return no_declared_classes

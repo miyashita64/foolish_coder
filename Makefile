@@ -20,11 +20,12 @@ TIMESTAMP = $(shell date +%Y%m%d%H%M%S)
 run:
 	@make ptest || :
 	@python3 -Bm src
+	@make ptest
 
 ptest:
 	@rm -rf ${BUILD_SPACE_PATH}
 	@mkdir -p ${BUILD_SPACE_PATH}
-# ifeqにインデントを入れると動かないらしい
+# ifeqやifneqにインデントを入れると動かないらしい
 ifneq ($(wildcard ${TARGET_PROJECT_SOURCE_PATH}/*), )
 	@cp -rp ${TARGET_PROJECT_SOURCE_PATH}/* ${BUILD_SPACE_PATH}
 endif
