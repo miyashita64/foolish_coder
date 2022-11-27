@@ -20,7 +20,6 @@ TIMESTAMP = $(shell date +%Y%m%d%H%M%S)
 run:
 	@make ptest || :
 	@python3 -Bm src
-	@make ptest
 
 ptest:
 	@rm -rf ${BUILD_SPACE_PATH}

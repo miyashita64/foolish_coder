@@ -13,6 +13,7 @@ namespace foolish_coder
     TEST(FoolishCoderTest, CreateHeaderFileTest)
     {
         int expected = 0;
-        ASSERT_EQ(expected, FoolishCoder::start());
+        FoolishCoder coder;
+        coder.start();
     }
 }
