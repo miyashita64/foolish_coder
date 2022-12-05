@@ -1,9 +1,9 @@
 # 自身(Makefile)があるディレクトリの絶対パス
 MAKEFILE_PATH = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 # FoolishCoderが生成したファイルを格納するパス
-FOOLISH_WORK_LINK = ${MAKEFILE_PATH}/results
+FOOLISH_WORK_PATH = ${MAKEFILE_PATH}results
 # FoolishCoderの対象プロジェクトのパス
-TARGET_PROJECT_PATH = ${MAKEFILE_PATH}/target_project
+TARGET_PROJECT_PATH = ${MAKEFILE_PATH}target_project
 # 対象プロジェクトのソースコードのディレクトリパス
 TARGET_PROJECT_SOURCE_PATH = ${TARGET_PROJECT_PATH}/src
 # 対象プロジェクトのテストコードのディレクトリパス
@@ -31,11 +31,18 @@ endif
 ifneq ($(wildcard ${TARGET_PROJECT_TEST_PATH}/*), )
 	@cp -rp ${TARGET_PROJECT_TEST_PATH}/* ${BUILD_SPACE_PATH}
 endif
-ifneq ($(wildcard ${FOOLISH_WORK_LINK}/*), )
-	@cp -rp ${FOOLISH_WORK_LINK}/* ${BUILD_SPACE_PATH}
+ifneq ($(wildcard ${FOOLISH_WORK_PATH}/*), )
+	@cp -rp ${FOOLISH_WORK_PATH}/* ${BUILD_SPACE_PATH}
 endif
 	cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH}
 	@mkdir -p ${BUILD_LOG_PATH}
 	cd ${BUILD_SPACE_PATH} && cmake --build . 2> ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
 	@mkdir -p ${EXECUTE_LOG_PATH}
 	cd ${BUILD_SPACE_PATH} && ./main > ${EXECUTE_LOG_PATH}/${TIMESTAMP}.txt
+
+clear:
+	rm -rf ${BUILD_SPACE_PATH}
+	rm -rf ${BUILD_LOG_PATH}
+	rm -rf ${EXECUTE_LOG_PATH}
+	rm -rf ${FOOLISH_WORK_PATH}/*
+	touch ${FOOLISH_WORK_PATH}/.gitkeep
