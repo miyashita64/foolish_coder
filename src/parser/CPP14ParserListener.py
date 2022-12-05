@@ -10,6 +10,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#translationUnit.
     def enterTranslationUnit(self, ctx:CPP14Parser.TranslationUnitContext):
+        # ドキュメントコメント・includeを除いたプログラム全文
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#translationUnit.
@@ -19,6 +21,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#primaryExpression.
     def enterPrimaryExpression(self, ctx:CPP14Parser.PrimaryExpressionContext):
+        # 代入式の左辺を除く、変数名とリテラル
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#primaryExpression.
@@ -28,6 +32,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#idExpression.
     def enterIdExpression(self, ctx:CPP14Parser.IdExpressionContext):
+        # 宣言・実行時の関数名や変数代入時の左辺、クラスメソッドは"::メソッド名"、for,if,return文は含まない
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#idExpression.
@@ -37,6 +43,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#unqualifiedId.
     def enterUnqualifiedId(self, ctx:CPP14Parser.UnqualifiedIdContext):
+        # 宣言・実行時の関数名や変数代入時の左辺、クラスメソッドは"メソッド名"、for,if,return文は含まない
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#unqualifiedId.
@@ -46,6 +54,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#qualifiedId.
     def enterQualifiedId(self, ctx:CPP14Parser.QualifiedIdContext):
+        # クラスメソッドのみ(::メソッド名)
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#qualifiedId.
@@ -55,6 +65,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#nestedNameSpecifier.
     def enterNestedNameSpecifier(self, ctx:CPP14Parser.NestedNameSpecifierContext):
+        # ::のみ？
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#nestedNameSpecifier.
@@ -64,6 +76,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#lambdaExpression.
     def enterLambdaExpression(self, ctx:CPP14Parser.LambdaExpressionContext):
+        # ラムダ式の定義部分
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#lambdaExpression.
@@ -136,6 +150,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#lambdaDeclarator.
     def enterLambdaDeclarator(self, ctx:CPP14Parser.LambdaDeclaratorContext):
+        # ラムダ式の引数定義部分
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#lambdaDeclarator.
@@ -163,6 +179,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#expressionList.
     def enterExpressionList(self, ctx:CPP14Parser.ExpressionListContext):
+        # 実行時引数
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#expressionList.
@@ -478,6 +496,11 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#selectionStatement.
     def enterSelectionStatement(self, ctx:CPP14Parser.SelectionStatementContext):
+        # 条件式に入った場合
+        # print(dir(ctx))
+        # print(ctx.getText())
+        # 条件式
+        # print(ctx.condition().getChild(0).getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#selectionStatement.
@@ -1198,6 +1221,8 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#functionDefinition.
     def enterFunctionDefinition(self, ctx:CPP14Parser.FunctionDefinitionContext):
+        # 関数定義の最初の単語(= static or 型定義)
+        # print(ctx.getChild(0).getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#functionDefinition.
@@ -1279,6 +1304,9 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#classHead.
     def enterClassHead(self, ctx:CPP14Parser.ClassHeadContext):
+        # print("Head")
+        # print(dir(ctx))
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#classHead.
@@ -1288,6 +1316,9 @@ class CPP14ParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by CPP14Parser#classHeadName.
     def enterClassHeadName(self, ctx:CPP14Parser.ClassHeadNameContext):
+        # print("HeadName")
+        # print(dir(ctx))
+        # print(ctx.getText())
         pass
 
     # Exit a parse tree produced by CPP14Parser#classHeadName.

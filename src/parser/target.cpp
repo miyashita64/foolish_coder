@@ -11,6 +11,10 @@
 
 #include <stdio.h>
 
+class DemoClass{
+    DemoClass::DemoClass(){}
+};
+
 int main(void){
     int current_num = 1;
     int prev_num = 0;
@@ -21,6 +25,12 @@ int main(void){
         next_num = current_num + prev_num;
         prev_num = current_num;
         current_num = next_num;
+        if(current_num > 10 || 1 + 1){
+            printf("%d, %d, %d\n", prev_num, current_num);
+        }
+        int a = i > 3 ? 4 : 5;
+        auto lambda_func = [](int b){ return b * 2; };
+        a = lambda_func(a);
     }
     printf("\n");
     return 0;
