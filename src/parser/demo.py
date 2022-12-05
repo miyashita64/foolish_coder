@@ -4,7 +4,7 @@ from pprint import pformat
 from antlr4 import FileStream, CommonTokenStream, ParseTreeWalker
 from CPP14Lexer import CPP14Lexer
 from CPP14Parser import CPP14Parser
-from CPP14ParserListener import CPP14ParserListener
+from MyCPP14ParserListener import MyCPP14ParserListener
 
 
 
@@ -19,4 +19,4 @@ class AstProcessor:
         walker.walk(self.listener, parser.translationUnit())
 
 if __name__ == "__main__":
-    AstProcessor(CPP14ParserListener()).execute("target.cpp")
+    AstProcessor(MyCPP14ParserListener()).execute("target.cpp")
