@@ -36,9 +36,9 @@ ifneq ($(wildcard ${FOOLISH_WORK_PATH}/*), )
 endif
 	cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH}
 	@mkdir -p ${BUILD_LOG_PATH}
-	cd ${BUILD_SPACE_PATH} && cmake --build . 2> ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
+	cd ${BUILD_SPACE_PATH} && cmake --build . 2>&1 | tee ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
 	@mkdir -p ${EXECUTE_LOG_PATH}
-	cd ${BUILD_SPACE_PATH} && ./main > ${EXECUTE_LOG_PATH}/${TIMESTAMP}.txt
+	cd ${BUILD_SPACE_PATH} && ./main 2>&1 | tee ${EXECUTE_LOG_PATH}/${TIMESTAMP}.txt
 
 clear:
 	rm -rf ${BUILD_SPACE_PATH}
