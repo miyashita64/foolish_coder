@@ -4,8 +4,8 @@
 @author miyashita64
 """
 
-from CPP14ParserListener import CPP14ParserListener
-from CPP14Parser import CPP14Parser
+from src.parser.CPP14ParserListener import CPP14ParserListener
+from src.parser.CPP14Parser import CPP14Parser
 
 import re
 
@@ -66,7 +66,7 @@ def ascend_to_type(ctx, ctx_type):
         current_node = current_node.parentCtx
     return current_node
 
-class MyCPP14ParserListener(CPP14ParserListener):
+class TestCaseCPP14ParserListener(CPP14ParserListener):
     def __init__(self, target_path):
         self.target_path = target_path
         self.assertions = []    # DeclarationStatementContext
