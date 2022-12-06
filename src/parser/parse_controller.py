@@ -4,12 +4,10 @@
 @author miyashita64
 """
 
-
 from antlr4 import FileStream, CommonTokenStream, ParseTreeWalker
 from src.parser.CPP14Lexer import CPP14Lexer
 from src.parser.CPP14Parser import CPP14Parser
 from src.parser.TestCaseCPP14ParserListener import TestCaseCPP14ParserListener
-
 
 
 class ParseController:

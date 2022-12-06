@@ -8,6 +8,7 @@ import os
 
 from src.error_analyzer.file_reader import FileReader
 
+
 class ErrorHandler:
     @staticmethod
     def handle():

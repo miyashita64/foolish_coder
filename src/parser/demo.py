@@ -8,7 +8,6 @@ from CPP14Parser import CPP14Parser
 from TestCaseCPP14ParserListener import MyCPP14ParserListener
 
 
-
 class AstProcessor:
 
     def __init__(self, listener):
