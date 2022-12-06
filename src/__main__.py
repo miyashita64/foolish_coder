@@ -15,7 +15,7 @@ def main():
     ErrorHandler.handle()
 
     test_code_path = "target_project/test/FeeCalculatorTest.cpp"
-    testcases = ParseController.parse_test_case(test_code_path)
+    testcases = ParseController.parse_testcase(test_code_path)
 
     print("\nComplete!!\n")
 

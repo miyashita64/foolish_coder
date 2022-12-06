@@ -18,12 +18,12 @@ def print_state(ctx, generation_diff = 0):
         print("---children---------------")
         print([child.getText() for child in target_ctx.getChildren()])
         print([type(child) for child in target_ctx.getChildren()])
-        # if target_ctx.parentCtx:
-        #     print("---parent---------------")
-        #     print(target_ctx.parentCtx.getText())
-        #     print(type(target_ctx.parentCtx))
-        #     print("---brothers---------------")
-        #     print([type(bro) for bro in target_ctx.parentCtx.getChildren()])
+        if target_ctx.parentCtx:
+            print("---parent---------------")
+            print(target_ctx.parentCtx.getText())
+            print(type(target_ctx.parentCtx))
+            print("---brothers---------------")
+            print([type(bro) for bro in target_ctx.parentCtx.getChildren()])
     print()
     # print_ancestor_types(target_ctx, generation_diff)
 
@@ -86,6 +86,7 @@ class TestCaseCPP14ParserListener(CPP14ParserListener):
             test_body = ascend_to_type(assertion.parentCtx, [CPP14Parser.FunctionBodyContext])     # FunctionBodyContext(を探す)
             if test_body is None:
                 continue
+            test_name, testcase_name = descend(descend(descend(test_body.parentCtx.getChild(0)).getChild(1)).getChild(1)).getText().split(",")
 
             # 変数表を構築する
             variable_table = {}
@@ -113,6 +114,8 @@ class TestCaseCPP14ParserListener(CPP14ParserListener):
 
             # テストケースを抽出する(テスト対象、入力、期待出力)
             testcase = {
+                "test_name": test_name,
+                "testcase_name": testcase_name,
                 "target_class_name": "",
                 "target_method_name": "",
                 "arguments": [],
