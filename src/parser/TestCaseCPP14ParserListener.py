@@ -1,6 +1,6 @@
 """
-@file   MyCPP14ParserListener.py
-@brief  C++のパース時のイベントリスナ
+@file   TestCaseCPP14ParserListener.py
+@brief  C++テストケースのパース時のイベントリスナ
 @author miyashita64
 """
 

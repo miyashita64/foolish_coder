@@ -38,26 +38,26 @@ class ErrorHandler:
             f.close()
             print("Created!!")
 
-        for fatal in FileReader.get_error_by_is_not_a_member_of_class():
-            path = f"./results/{fatal['class_name']}.h"
-            print(f"Adding member \"{fatal['member_name']}\" on class {fatal['class_name']} ....", end = "\t")
-            code = f"class {fatal['class_name']}"+"{\n"
-            code += f" public:\n"
-            code += f"\tvoid {fatal['member_name']}()"+"{};\n"
-            code += "};"
-            f = open(path, 'w')
-            f.write(code)
-            f.close()
-            print("Created!!")
+        # for fatal in FileReader.get_error_by_is_not_a_member_of_class():
+        #     path = f"./results/{fatal['class_name']}.h"
+        #     print(f"Adding member \"{fatal['member_name']}\" on class {fatal['class_name']} ....", end = "\t")
+        #     code = f"class {fatal['class_name']}"+"{\n"
+        #     code += f" public:\n"
+        #     code += f"\tvoid {fatal['member_name']}()"+"{};\n"
+        #     code += "};"
+        #     f = open(path, 'w')
+        #     f.write(code)
+        #     f.close()
+        #     print("Created!!")
 
-        for fatal in FileReader.get_error_by_has_no_member_named():
-            path = f"./results/{fatal['class_name']}.h"
-            print(f"Adding member \"{fatal['member_name']}\" on class {fatal['class_name']} ....", end = "\t")
-            code = f"class {fatal['class_name']}"+"{\n"
-            code += f" public:\n"
-            code += f"\tvoid {fatal['member_name']}()"+"{};\n"
-            code += "};"
-            f = open(path, 'w')
-            f.write(code)
-            f.close()
-            print("Created!!")
+        # for fatal in FileReader.get_error_by_has_no_member_named():
+        #     path = f"./results/{fatal['class_name']}.h"
+        #     print(f"Adding member \"{fatal['member_name']}\" on class {fatal['class_name']} ....", end = "\t")
+        #     code = f"class {fatal['class_name']}"+"{\n"
+        #     code += f" public:\n"
+        #     code += f"\tvoid {fatal['member_name']}()"+"{};\n"
+        #     code += "};"
+        #     f = open(path, 'w')
+        #     f.write(code)
+        #     f.close()
+        #     print("Created!!")
