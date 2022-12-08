@@ -37,6 +37,7 @@ endif
 	cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH}
 	@mkdir -p ${BUILD_LOG_PATH}
 	cd ${BUILD_SPACE_PATH} && cmake --build . 2>&1 | tee ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
+	@cp ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt ${BUILD_LOG_PATH}/latest_error.txt
 	@mkdir -p ${EXECUTE_LOG_PATH}
 	cd ${BUILD_SPACE_PATH} && ./main 2>&1 | tee ${EXECUTE_LOG_PATH}/${TIMESTAMP}.txt
 

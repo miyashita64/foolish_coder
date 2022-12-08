@@ -66,6 +66,34 @@ def ascend_to_type(ctx, ctx_type):
         current_node = current_node.parentCtx
     return current_node
 
+def cast(value, value_type):
+    if value_type == "int":
+        return int(value)
+    elif value_type in ["double", "float"]:
+        return float(value)
+    else:
+        return str(value)
+
+def predict_cast(value):
+    target = str(value)
+    if not target:
+        return target
+
+    has_only_period = False
+    if target.count("-") == 1 and target[0] == "-":
+        target = target[1:]
+    if target.count(".") == 1:
+        has_only_period = True
+        target = target.replace(".", "")
+
+    if target.isdecimal():
+        if has_only_period:
+            return float(value)
+        else:
+            return int(value)
+    return str(value)
+        
+
 class TestCaseCPP14ParserListener(CPP14ParserListener):
     def __init__(self, target_path):
         self.target_path = target_path
@@ -133,11 +161,11 @@ class TestCaseCPP14ParserListener(CPP14ParserListener):
                     # 値が見つかった場合、それを期待出力とする
                     testcase["expected"] = {
                         "type": variable["type"],
-                        "value": target_value_ctx.getText(),
+                        "value": cast(target_value_ctx.getText(), variable["type"]),
                     }
                 else:
                     # 式が見つかった場合、それをテスト対象の呼び出しとする
-                    testcase["arguments"] = [child.getText() for child in value_ctx.getChild(2).getChild(0).getChildren() if type(child) is CPP14Parser.InitializerClauseContext]
+                    testcase["arguments"] = [predict_cast(child.getText()) for child in value_ctx.getChild(2).getChild(0).getChildren() if type(child) is CPP14Parser.InitializerClauseContext]
                     if value_ctx.getChildCount() >= 3:
                         instance_name = descend(value_ctx.getChild(0)).getChild(0).getText()
                         if instance_name in variable_table:
@@ -145,7 +173,8 @@ class TestCaseCPP14ParserListener(CPP14ParserListener):
                         testcase["target_method_name"] = value_ctx.getChild(0).getChild(2).getText()
                     elif value_ctx.getChildCount() >= 1:
                         testcase["target_method_name"] = value_ctx.getChild(0).getChild(0).getText()
-                self.testcases.append(testcase)
+            # テストケースを追加する
+            self.testcases.append(testcase)
 
     # 式検出時の処理
     def enterDeclarationStatement(self, ctx:CPP14Parser.DeclarationStatementContext):
