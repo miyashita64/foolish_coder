@@ -13,39 +13,62 @@ from src.structure.cpp_class import CPPClass
 class SourceCodeGenerator:
     @staticmethod
     def generate(testcases):
-        conds = SourceCodeGenerator.demo(testcases)
-        if len(conds) == 0:
-            return None
-        # 仮に全てのテストケースは1つのメンバ関数に対するものとする
-        class_name = testcases[0]["target_class_name"]
-        function_name = testcases[0]["target_method_name"]
-        function_type = testcases[0]["expected"]["type"]
-        function_arguments = [Variable("val1", arg) for arg in testcases[0]["arguments"]]
-        function_statements = conds
-        # コードデータを作成する
-        function = Function(function_name, class_name, function_type, function_arguments, function_statements)
-        target_class = CPPClass(class_name, function_members=[function])
-        return target_class
+        # テストケースから中間データを生成する
+        return SourceCodeGenerator.demo(testcases)
 
     @staticmethod
     def demo(testcases):
-        # テストケースから同一の入力を省く
-        args_list = [testcase["arguments"] for testcase in testcases]
-        unique_testcases = [testcases[i] for i in range(len(args_list)) if args_list[i] not in args_list[i+1:]]
-        # 第1引数でソート
-        sorted_testcases = sorted(unique_testcases, key=lambda testcase: max([testcase["arguments"][0]]))
-        # 各出力における引数の範囲を探索する
-        cond_expressions = []
-        cond_expression = CondExpression(None, None, None)
-        for testcase in sorted_testcases:
-            # 新しい出力を発見した場合
-            if testcase["expected"]["value"] != cond_expression.value:
-                # 出力がNoneなテストケースは無視する
-                if cond_expression.value != None:
-                    cond_expressions.append(cond_expression)
-                # 条件式をインスタンス化する
-                cond_expression = CondExpression(testcase["expected"]["value"], testcase["arguments"][0], testcase["arguments"][0])
+        # テストケースをクラス・メソッド毎に集約する
+        class_infos = {}
+        for testcase in testcases:
+            class_name = testcase["target_class_name"]
+            method_name = testcase["target_method_name"]
+            # 未登録のクラスを発見した場合
+            if class_name not in class_infos:
+                class_infos[class_name] = {"method_infos": {}, "function_members": []}
+            # 未登録のメソッドを発見した場合
+            if method_name not in class_infos[class_name]["method_infos"]:
+                class_infos[class_name]["method_infos"][method_name] = {
+                    "type": testcase["expected"]["type"],
+                    "args": [Variable("val1", arg) for arg in testcase["arguments"]],
+                    "testcases": [testcase],
+                }
             else:
-                # 出力が同じな場合、入力の範囲を広げる
-                cond_expression.max = testcase["arguments"][0]
-        return cond_expressions
+                class_infos[class_name]["method_infos"][method_name]["testcases"].append(testcase)
+
+        # 中間データを生成する
+        middle_datas = []
+        for class_name in class_infos:
+            class_info = class_infos[class_name]
+            for method_name in class_info["method_infos"]:
+                method_info = class_info["method_infos"][method_name]
+                # テストケースから同一の入力を省く
+                args_list = [testcase["arguments"] for testcase in method_info["testcases"]]
+                unique_testcases = [method_info["testcases"][i] for i in range(len(args_list)) if args_list[i] not in args_list[i+1:]]
+                # 第1引数でソート
+                sorted_testcases = sorted(unique_testcases, key=lambda testcase: max([testcase["arguments"][0]]))
+                method_info["testcases"] = sorted_testcases
+
+                # テストケースを同じ期待出力毎に集約する形で、ソースコードを設計する
+                cond_expressions = []
+                cond_expression = CondExpression(None, None, None)
+                for testcase in method_info["testcases"]:
+                    # 新しい出力を発見した場合
+                    if testcase["expected"]["value"] != cond_expression.value:
+                        # 出力がNoneなテストケースは無視する(初回は必ずNone)
+                        if cond_expression.value != None:
+                            cond_expressions.append(cond_expression)
+                        # 条件式をインスタンス化する
+                        cond_expression = CondExpression(testcase["expected"]["value"], testcase["arguments"][0], testcase["arguments"][0])
+                    else:
+                        # 出力が同じな場合、入力の範囲を広げる
+                        cond_expression.max = testcase["arguments"][0]
+                # 最後ループのCondExpressionを追加する
+                cond_expressions.append(cond_expression)
+                # 関数の中間データを生成する
+                function = Function(method_name, class_name, method_info["type"],  method_info["args"], cond_expressions)
+                class_info["function_members"].append(function)
+            # CPPクラスの中間データを生成する
+            cpp_class = CPPClass(class_name, function_members=class_info["function_members"])
+            middle_datas.append(cpp_class)
+        return middle_datas

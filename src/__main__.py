@@ -28,20 +28,24 @@ def main():
     print()
     print(f"No such {no_file_error_count} files.")
     print(f"No such {no_class_error_count} classes.")
-    print(f"No such {no_member_error_count} memvers.\n")
+    print(f"No such {no_member_error_count} members.\n")
 
     if no_file_error_count > 0:
         # ファイルが見つからないエラーは、テストケースを通さないため再実行する
         ErrorHandler.handle(errors)
         os.system("make run")
         exit()
+
     # テストケース解析
     testcases = ParseController.parse_testcase(TEST_CODE_FILE_NAME, TEST_CODE_DIR_PATH)
+    print()
+    
     # ソースコード解析
-    # 自動生成
-    patched_class = SourceCodeGenerator.generate(testcases)
-    target_file = File(patched_class.file_name)
-    target_file.write(patched_class.get_code())
+    # ソースコード生成
+    patched_classes = SourceCodeGenerator.generate(testcases)
+    for patched_class in patched_classes:
+        target_file = File(patched_class.file_name)
+        target_file.write(patched_class.get_code())
 
     print("\nCompleted!!\n")
 

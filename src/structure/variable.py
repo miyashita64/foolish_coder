@@ -9,6 +9,8 @@ class Variable:
         self.name = variable_name
         self.value = value
         self.type = data_type
+        if data_type == "auto":
+            self.auto_cast()
 
     def assign(self, value, is_init=False):
         self.value = value
@@ -27,13 +29,13 @@ class Variable:
             self.auto_cast()
         elif value_type == "int":
             self.int(value)
-            self.data_type = "int"
+            self.type = "int"
         elif value_type in ["double", "float"]:
             self.float(value)
-            self.data_type = "value_type"
+            self.type = "value_type"
         else:
             self.str(value)
-            self.data_type = "char*"
+            self.type = "char*"
 
     def auto_cast(self):
         target = str(self.value)
@@ -47,9 +49,10 @@ class Variable:
         if target.isdecimal():
             if has_only_period:
                 self.value = float(self.value)
-                self.data_type = "float"
+                self.type = "float"
             else:
                 self.value = int(self.value)
-                self.data_type = "int"
-        self.value = str(self.value)
-        self.data_type = "char*"
+                self.type = "int"
+        else:                
+            self.value = str(self.value)
+            self.type = "char*"
