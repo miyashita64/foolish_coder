@@ -20,7 +20,7 @@ namespace foolish_coder
 
     TEST(GetFeeTest, GetYoungestChildFeeTest){
         FeeCalculator fee_calculator;
-        int acutual = fee_calculator.getFee(0);
+        int acutual = fee_calculator.getFee1(0);
         int expected = 0;
         EXPECT_EQ(acutual, expected);
     }

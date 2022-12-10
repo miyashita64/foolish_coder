@@ -19,6 +19,8 @@ def main():
     BUILD_LOG_DIR_PATH = "target_project/logs/"
     TEST_CODE_FILE_NAME = "FeeCalculatorTest.cpp"
     TEST_CODE_DIR_PATH = "target_project/test/"
+    SOURCE_CODE_FILE_NAME = "FeeCalculator.h"
+    SOURCE_CODE_DIR_PATH = "results/"
 
     # エラー解析
     errors = ErrorAnalyzer.analyze(BUILD_LOG_FILE_NAME, BUILD_LOG_DIR_PATH)
@@ -38,9 +40,10 @@ def main():
 
     # テストケース解析
     testcases = ParseController.parse_testcase(TEST_CODE_FILE_NAME, TEST_CODE_DIR_PATH)
-    print()
     
     # ソースコード解析
+    source_classes = ParseController.parse_source(SOURCE_CODE_FILE_NAME, SOURCE_CODE_DIR_PATH)
+
     # ソースコード生成
     patched_classes = SourceCodeGenerator.generate(testcases)
     for patched_class in patched_classes:
