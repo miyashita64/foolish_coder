@@ -20,11 +20,11 @@ class CPPClass:
         code = f"{indent}class {self.name}"
         code += "{\n"
         if self.functions != []:
-            code += f"{indent}  public:\n"
+            code += f"{indent} public:\n"
         for function in self.functions:
             code += f"{function.get_code(nest+1)}\n"
         if self.variables != []:
-            code += f"{indent}  private:\n"
+            code += f"{indent} private:\n"
         for variable in self.variables:
             code += f"{indent}\t{variable.get_arg_code()};\n"
         code += indent + "};\n"

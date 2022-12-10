@@ -27,6 +27,6 @@ class File:
             target_file = open(self.path, "w")
             target_file.write(text)
             target_file.close()
-            print("Completed!!")
+            print("Succeed!!")
         except:
             print("Failed.")
