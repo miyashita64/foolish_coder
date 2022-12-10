@@ -18,10 +18,48 @@ EXECUTE_LOG_PATH = ${TARGET_PROJECT_PATH}/results
 TIMESTAMP = $(shell date +%Y%m%d%H%M%S)
 
 run:
-	@make ptest || :
+	@make log
 	@python3 -Bm src
+	@make test
 
-ptest:
+test:
+	@rm -rf ${BUILD_SPACE_PATH}
+	@mkdir -p ${BUILD_SPACE_PATH}
+# ifeqやifneqにインデントを入れると動かないらしい
+ifneq ($(wildcard ${TARGET_PROJECT_SOURCE_PATH}/*), )
+	@cp -rp ${TARGET_PROJECT_SOURCE_PATH}/* ${BUILD_SPACE_PATH}
+endif
+ifneq ($(wildcard ${TARGET_PROJECT_TEST_PATH}/*), )
+	@cp -rp ${TARGET_PROJECT_TEST_PATH}/* ${BUILD_SPACE_PATH}
+endif
+ifneq ($(wildcard ${FOOLISH_WORK_PATH}/*), )
+	@cp -rp ${FOOLISH_WORK_PATH}/* ${BUILD_SPACE_PATH}
+endif
+	cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH}
+	cd ${BUILD_SPACE_PATH} && cmake --build .
+	cd ${BUILD_SPACE_PATH} && ./main
+
+log:
+	@rm -rf ${BUILD_SPACE_PATH}
+	@mkdir -p ${BUILD_SPACE_PATH}
+# ifeqやifneqにインデントを入れると動かないらしい
+ifneq ($(wildcard ${TARGET_PROJECT_SOURCE_PATH}/*), )
+	@cp -rp ${TARGET_PROJECT_SOURCE_PATH}/* ${BUILD_SPACE_PATH}
+endif
+ifneq ($(wildcard ${TARGET_PROJECT_TEST_PATH}/*), )
+	@cp -rp ${TARGET_PROJECT_TEST_PATH}/* ${BUILD_SPACE_PATH}
+endif
+ifneq ($(wildcard ${FOOLISH_WORK_PATH}/*), )
+	@cp -rp ${FOOLISH_WORK_PATH}/* ${BUILD_SPACE_PATH}
+endif
+	@cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH} > /dev/null
+	@mkdir -p ${BUILD_LOG_PATH}
+	@cd ${BUILD_SPACE_PATH} && cmake --build . > ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
+	@cp ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt ${BUILD_LOG_PATH}/latest_error.txt
+	@mkdir -p ${EXECUTE_LOG_PATH}
+	@cd ${BUILD_SPACE_PATH} && ./main > ${EXECUTE_LOG_PATH}/${TIMESTAMP}.txt
+
+test_and_log:
 	@rm -rf ${BUILD_SPACE_PATH}
 	@mkdir -p ${BUILD_SPACE_PATH}
 # ifeqやifneqにインデントを入れると動かないらしい
