@@ -5,6 +5,7 @@
 """
 
 import os
+import glob
 
 from src.error_analyzer.error_analyzer import ErrorAnalyzer
 from src.error_analyzer.error_handler import ErrorHandler
@@ -17,9 +18,7 @@ def main():
 
     BUILD_LOG_FILE_NAME = "latest_error.txt"
     BUILD_LOG_DIR_PATH = "target_project/logs/"
-    TEST_CODE_FILE_NAME = "FeeCalculatorTest.cpp"
     TEST_CODE_DIR_PATH = "target_project/test/"
-    SOURCE_CODE_FILE_NAME = "FeeCalculator.h"
     SOURCE_CODE_DIR_PATH = "results/"
 
     # エラー解析
@@ -27,28 +26,35 @@ def main():
     no_file_error_count = len(errors["no_file_errors"])
     no_class_error_count = len(errors["no_class_errors"])
     no_member_error_count = len(errors["no_member_errors"])
-    print()
-    print(f"No such {no_file_error_count} files.")
-    print(f"No such {no_class_error_count} classes.")
-    print(f"No such {no_member_error_count} members.\n")
-
     if no_file_error_count > 0:
         # ファイルが見つからないエラーは、テストケースを通さないため再実行する
         ErrorHandler.handle(errors)
         os.system("make run")
         exit()
+    print()
+    print(f"No such {no_file_error_count} files.")
+    print(f"No such {no_class_error_count} classes.")
+    print(f"No such {no_member_error_count} members.\n")
 
-    # テストケース解析
-    testcases = ParseController.parse_testcase(TEST_CODE_FILE_NAME, TEST_CODE_DIR_PATH)
-    
-    # ソースコード解析
-    source_classes = ParseController.parse_source(SOURCE_CODE_FILE_NAME, SOURCE_CODE_DIR_PATH)
-
-    # ソースコード生成
-    patched_classes = SourceCodeGenerator.generate(testcases, source_classes)
-    for patched_class in patched_classes:
-        target_file = File(patched_class.file_name)
-        target_file.write(patched_class.get_code())
+    test_file_paths = glob.glob(f"{TEST_CODE_DIR_PATH}*")
+    # テストコードを1つずつ解析する
+    for test_file_path in test_file_paths:
+        # テストケース解析
+        testcases = ParseController.parse_testcase(test_file_path)
+        source_classes = []
+        for class_name in set([testcase["target_class_name"] for testcase in testcases]):
+            # ソースコード解析
+            source_code_path = f"{SOURCE_CODE_DIR_PATH}{class_name}.h"
+            source_classe_tmps = ParseController.parse_source(source_code_path)
+            if len(source_classe_tmps) > 0:
+                source_classes.append(*source_classe_tmps)
+        # ソースコード生成
+        patched_classes = SourceCodeGenerator.generate(testcases, source_classes)
+        for patched_class in patched_classes:
+            target_header_file = File(patched_class.header_file_name)
+            target_header_file.write(patched_class.get_header_code())
+            target_source_file = File(patched_class.source_file_name)
+            target_source_file.write(patched_class.get_source_code())
 
     print("\nCompleted!!\n")
 

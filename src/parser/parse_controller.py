@@ -14,9 +14,8 @@ from src.parser.SourceCPP14ParserListener import SourceCPP14ParserListener
 class ParseController:
 
     @staticmethod
-    def parse_testcase(test_code_file_name, test_code_dir_path):
+    def parse_testcase(test_code_path):
         """テストコードからテストケースを抽出する."""
-        test_code_path = test_code_dir_path + test_code_file_name
         print(f"Parsing test code {test_code_path} ... ", end="")
         try:
             listener = TestCaseCPP14ParserListener(test_code_path)
@@ -29,9 +28,8 @@ class ParseController:
         return listener.testcases
 
     @staticmethod
-    def parse_source(source_code_file_name, source_code_dir_path):
+    def parse_source(source_code_path):
         """ソースファイルからソース情報を抽出する."""
-        source_code_path = source_code_dir_path + source_code_file_name
         print(f"Parsing source code {source_code_path} ... ", end="")
         try:
             listener = SourceCPP14ParserListener(source_code_path)
