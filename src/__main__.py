@@ -36,8 +36,8 @@ def main():
     print(f"No such {no_class_error_count} classes.")
     print(f"No such {no_member_error_count} members.\n")
 
-    test_file_paths = glob.glob(f"{TEST_CODE_DIR_PATH}*")
     # テストコードを1つずつ解析する
+    test_file_paths = glob.glob(f"{TEST_CODE_DIR_PATH}*.cpp")
     for test_file_path in test_file_paths:
         # テストケース解析
         testcases = ParseController.parse_testcase(test_file_path)

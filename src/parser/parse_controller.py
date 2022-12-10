@@ -23,8 +23,9 @@ class ParseController:
             walker = ParseTreeWalker()
             walker.walk(listener, parser.translationUnit())
             print("Succeed!")
-        except:
+        except Exception as e:
             print("Failed.")
+            print(e)
         return listener.testcases
 
     @staticmethod
@@ -37,6 +38,7 @@ class ParseController:
             walker = ParseTreeWalker()
             walker.walk(listener, parser.translationUnit())
             print("Succeed!")
-        except:
+        except Exception as e:
             print("Failed.")
+            print(e)
         return listener.classes

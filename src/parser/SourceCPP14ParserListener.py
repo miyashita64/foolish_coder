@@ -44,8 +44,8 @@ class SourceCPP14ParserListener(CPP14ParserListener):
     # メンバ宣言検出時の処理
     def enterMemberdeclaration(self, ctx:CPP14Parser.MemberdeclarationContext):
         # メンバ関数の定義の場合
-        if type(ctx.getChild(0)) is CPP14Parser.FunctionDefinitionContext:
-            function_ctx = ctx.getChild(0)
+        if type(ctx.getChild(1)) is CPP14Parser.MemberDeclaratorListContext:
+            function_ctx = ctx
             function_head_ctx = descend(function_ctx.getChild(1))
             arg_tmps = descend(function_head_ctx.getChild(1)).getChild(1).getChild(0).getChildren()
             args = [{"type": arg.getChild(0).getText(), "name": arg.getChild(1).getText()} for arg in arg_tmps if type(arg) is CPP14Parser.ParameterDeclarationContext]

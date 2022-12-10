@@ -20,7 +20,8 @@ class SourceCodeGenerator:
     def demo(testcases, source_classes):
         # テストケースをクラス・メソッド毎に集約する
         class_infos = {}
-        for testcase in testcases:
+        has_args_testcases = [testcase for testcase in testcases if testcase["arguments"] != []]
+        for testcase in has_args_testcases:
             class_name = testcase["target_class_name"]
             method_name = testcase["target_method_name"]
             # 未登録のクラスを発見した場合

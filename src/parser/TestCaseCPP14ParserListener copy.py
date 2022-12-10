@@ -81,10 +81,7 @@ class TestCaseCPP14ParserListener(CPP14ParserListener):
                     }
                 else:
                     # 式が見つかった場合、それをテスト対象の呼び出しとする
-                    try:
-                        testcase["arguments"] = [predict_cast(child.getText()) for child in value_ctx.getChild(2).getChild(0).getChildren() if type(child) is CPP14Parser.InitializerClauseContext]
-                    except:
-                        pass
+                    testcase["arguments"] = [predict_cast(child.getText()) for child in value_ctx.getChild(2).getChild(0).getChildren() if type(child) is CPP14Parser.InitializerClauseContext]
                     if value_ctx.getChildCount() >= 3:
                         instance_name = descend(value_ctx.getChild(0)).getChild(0).getText()
                         if instance_name in variable_table:
