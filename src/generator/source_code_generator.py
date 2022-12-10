@@ -12,25 +12,41 @@ from src.structure.cpp_class import CPPClass
 
 class SourceCodeGenerator:
     @staticmethod
-    def generate(testcases):
+    def generate(testcases, source_classes):
         # テストケースから中間データを生成する
-        return SourceCodeGenerator.demo(testcases)
+        return SourceCodeGenerator.demo(testcases, source_classes)
 
     @staticmethod
-    def demo(testcases):
+    def demo(testcases, source_classes):
         # テストケースをクラス・メソッド毎に集約する
         class_infos = {}
+        source_class = None
+        source_method = None
         for testcase in testcases:
             class_name = testcase["target_class_name"]
             method_name = testcase["target_method_name"]
             # 未登録のクラスを発見した場合
             if class_name not in class_infos:
                 class_infos[class_name] = {"method_infos": {}, "function_members": []}
+                # ソースコード情報から同名のクラスを検索する
+                source_class_tmps = [src for src in source_classes if src["name"] == class_name]
+                source_class = source_class_tmps[0] if len(source_class_tmps) > 0 else None
             # 未登録のメソッドを発見した場合
             if method_name not in class_infos[class_name]["method_infos"]:
+                # ソースコード情報から同名メソッドを検索する
+                if source_class is not None:
+                    source_method_tmps = [src for src in source_class["private"]["functions"] if src["name"] == method_name]
+                    source_method_tmps += [src for src in source_class["public"]["functions"] if src["name"] == method_name]
+                    source_method = source_method_tmps[0] if len(source_method_tmps) > 0 else None
+                arg_names = []
+                for i in range(len(testcase["arguments"])):
+                    name = f"param{i+1}"
+                    if source_method is not None and len(source_method["args"]) > i:
+                        name = source_method["args"][i]["name"]
+                    arg_names.append(name)
                 class_infos[class_name]["method_infos"][method_name] = {
                     "type": testcase["expected"]["type"],
-                    "args": [Variable("val1", arg) for arg in testcase["arguments"]],
+                    "args": [Variable(arg_names[i], testcase["arguments"][i]) for i in range(len(testcase["arguments"]))],
                     "testcases": [testcase],
                 }
             else:

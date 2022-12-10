@@ -47,8 +47,8 @@ class SourceCPP14ParserListener(CPP14ParserListener):
         if type(ctx.getChild(0)) is CPP14Parser.FunctionDefinitionContext:
             function_ctx = ctx.getChild(0)
             function_head_ctx = descend(function_ctx.getChild(1))
-            arg_tmps = descend(descend(function_head_ctx.getChild(1)).getChild(1)).getChildren()
-            args = [{"type": arg.getChild(0), "name": arg.getChild(1)} for arg in arg_tmps if type(arg) is CPP14Parser.ParameterDeclarationContext]
+            arg_tmps = descend(function_head_ctx.getChild(1)).getChild(1).getChild(0).getChildren()
+            args = [{"type": arg.getChild(0).getText(), "name": arg.getChild(1).getText()} for arg in arg_tmps if type(arg) is CPP14Parser.ParameterDeclarationContext]
             function = {
                 "function_ctx": function_ctx,
                 "type": function_ctx.getChild(0).getText(),

@@ -45,7 +45,7 @@ def main():
     source_classes = ParseController.parse_source(SOURCE_CODE_FILE_NAME, SOURCE_CODE_DIR_PATH)
 
     # ソースコード生成
-    patched_classes = SourceCodeGenerator.generate(testcases)
+    patched_classes = SourceCodeGenerator.generate(testcases, source_classes)
     for patched_class in patched_classes:
         target_file = File(patched_class.file_name)
         target_file.write(patched_class.get_code())
