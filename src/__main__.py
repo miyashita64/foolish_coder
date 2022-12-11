@@ -47,7 +47,8 @@ def main():
         for class_name in set([testcase["target_class_name"] for testcase in testcases]):
             # エラーが出ているクラスについてのみ扱う
             if class_name not in error_classe_names:
-                continue
+                # continue
+                pass
             # ソースコード解析
             source_code_path = f"{SOURCE_CODE_DIR_PATH}{class_name}.h"
             source_class_tmps = ParseController.parse_source(source_code_path)
