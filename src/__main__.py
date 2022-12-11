@@ -36,6 +36,8 @@ def main():
     print(f"No such {no_class_error_count} classes.")
     print(f"No such {no_member_error_count} members.\n")
 
+    error_classe_names = [error["class_name"] for error in errors["no_class_errors"]] + [error["class_name"] for error in errors["no_member_errors"]]
+
     # テストコードを1つずつ解析する
     test_file_paths = glob.glob(f"{TEST_CODE_DIR_PATH}*.cpp")
     for test_file_path in test_file_paths:
@@ -43,11 +45,14 @@ def main():
         testcases = ParseController.parse_testcase(test_file_path)
         source_classes = []
         for class_name in set([testcase["target_class_name"] for testcase in testcases]):
+            # エラーが出ているクラスについてのみ扱う
+            if class_name not in error_classe_names:
+                continue
             # ソースコード解析
             source_code_path = f"{SOURCE_CODE_DIR_PATH}{class_name}.h"
-            source_classe_tmps = ParseController.parse_source(source_code_path)
-            if len(source_classe_tmps) > 0:
-                source_classes.append(*source_classe_tmps)
+            source_class_tmps = ParseController.parse_source(source_code_path)
+            if len(source_class_tmps) > 0:
+                source_classes.append(*source_class_tmps)
         # ソースコード生成
         patched_classes = SourceCodeGenerator.generate(testcases, source_classes)
         for patched_class in patched_classes:

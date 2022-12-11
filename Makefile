@@ -17,61 +17,33 @@ EXECUTE_LOG_PATH = ${TARGET_PROJECT_PATH}/results
 # 実行時刻
 TIMESTAMP = $(shell date +%Y%m%d%H%M%S)
 
+make = make --no-print-directory
+
 run:
-	@make log
+# || : で成功したことにして次の処理に移っている
+	@${make} close_logging || :
 	@python3 -Bm src
-	@make test
 
 test:
-	@rm -rf ${BUILD_SPACE_PATH}
-	@mkdir -p ${BUILD_SPACE_PATH}
-# ifeqやifneqにインデントを入れると動かないらしい
-ifneq ($(wildcard ${TARGET_PROJECT_SOURCE_PATH}/*), )
-	@cp -rp ${TARGET_PROJECT_SOURCE_PATH}/* ${BUILD_SPACE_PATH}
-endif
-ifneq ($(wildcard ${TARGET_PROJECT_TEST_PATH}/*), )
-	@cp -rp ${TARGET_PROJECT_TEST_PATH}/* ${BUILD_SPACE_PATH}
-endif
-ifneq ($(wildcard ${FOOLISH_WORK_PATH}/*), )
-	@cp -rp ${FOOLISH_WORK_PATH}/* ${BUILD_SPACE_PATH}
-endif
+	@echo "Running Test ..."
+	@${make} build_space
 	cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH}
 	cd ${BUILD_SPACE_PATH} && cmake --build .
 	cd ${BUILD_SPACE_PATH} && ./main
 
-log:
-	@rm -rf ${BUILD_SPACE_PATH}
-	@mkdir -p ${BUILD_SPACE_PATH}
-# ifeqやifneqにインデントを入れると動かないらしい
-ifneq ($(wildcard ${TARGET_PROJECT_SOURCE_PATH}/*), )
-	@cp -rp ${TARGET_PROJECT_SOURCE_PATH}/* ${BUILD_SPACE_PATH}
-endif
-ifneq ($(wildcard ${TARGET_PROJECT_TEST_PATH}/*), )
-	@cp -rp ${TARGET_PROJECT_TEST_PATH}/* ${BUILD_SPACE_PATH}
-endif
-ifneq ($(wildcard ${FOOLISH_WORK_PATH}/*), )
-	@cp -rp ${FOOLISH_WORK_PATH}/* ${BUILD_SPACE_PATH}
-endif
-	@cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH} > /dev/null
+close_logging:
+	@echo "Running Test ..."
+	@${make} build_space
+	@cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH} &> /dev/null
 	@mkdir -p ${BUILD_LOG_PATH}
-	@cd ${BUILD_SPACE_PATH} && cmake --build . > ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
+	@cd ${BUILD_SPACE_PATH} && cmake --build . &> ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
 	@cp ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt ${BUILD_LOG_PATH}/latest_error.txt
 	@mkdir -p ${EXECUTE_LOG_PATH}
-	@cd ${BUILD_SPACE_PATH} && ./main > ${EXECUTE_LOG_PATH}/${TIMESTAMP}.txt
+	@cd ${BUILD_SPACE_PATH} && ./main &> ${EXECUTE_LOG_PATH}/${TIMESTAMP}.txt
 
-test_and_log:
-	@rm -rf ${BUILD_SPACE_PATH}
-	@mkdir -p ${BUILD_SPACE_PATH}
-# ifeqやifneqにインデントを入れると動かないらしい
-ifneq ($(wildcard ${TARGET_PROJECT_SOURCE_PATH}/*), )
-	@cp -rp ${TARGET_PROJECT_SOURCE_PATH}/* ${BUILD_SPACE_PATH}
-endif
-ifneq ($(wildcard ${TARGET_PROJECT_TEST_PATH}/*), )
-	@cp -rp ${TARGET_PROJECT_TEST_PATH}/* ${BUILD_SPACE_PATH}
-endif
-ifneq ($(wildcard ${FOOLISH_WORK_PATH}/*), )
-	@cp -rp ${FOOLISH_WORK_PATH}/* ${BUILD_SPACE_PATH}
-endif
+open_logging:
+	@echo "Running Test ..."
+	@${make} build_space
 	cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH}
 	@mkdir -p ${BUILD_LOG_PATH}
 	cd ${BUILD_SPACE_PATH} && cmake --build . 2>&1 | tee ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
@@ -85,3 +57,17 @@ clear:
 	rm -rf ${EXECUTE_LOG_PATH}
 	rm -rf ${FOOLISH_WORK_PATH}/*
 	touch ${FOOLISH_WORK_PATH}/.gitkeep
+
+build_space:
+	@rm -rf ${BUILD_SPACE_PATH}
+	@mkdir -p ${BUILD_SPACE_PATH}
+# ifeqやifneqにインデントを入れると動かないらしい
+ifneq ($(wildcard ${TARGET_PROJECT_SOURCE_PATH}/*), )
+	@cp -rp ${TARGET_PROJECT_SOURCE_PATH}/* ${BUILD_SPACE_PATH}
+endif
+ifneq ($(wildcard ${TARGET_PROJECT_TEST_PATH}/*), )
+	@cp -rp ${TARGET_PROJECT_TEST_PATH}/* ${BUILD_SPACE_PATH}
+endif
+ifneq ($(wildcard ${FOOLISH_WORK_PATH}/*), )
+	@cp -rp ${FOOLISH_WORK_PATH}/* ${BUILD_SPACE_PATH}
+endif
