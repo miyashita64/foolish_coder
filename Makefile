@@ -24,6 +24,9 @@ run:
 	@${make} close_logging || :
 	@python3 -Bm src
 
+approve:
+	@cp ${FOOLISH_WORK_PATH}/* ${TARGET_PROJECT_SOURCE_PATH}
+
 test:
 	@echo "Running Test ..."
 	@${make} build_space
