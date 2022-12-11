@@ -71,6 +71,25 @@ def cast(value, value_type):
     else:
         return str(value)
 
+def predict_type(value):
+    target = str(value)
+    if not target:
+        return target
+
+    has_only_period = False
+    if target.count("-") == 1 and target[0] == "-":
+        target = target[1:]
+    if target.count(".") == 1:
+        has_only_period = True
+        target = target.replace(".", "")
+
+    if target.isdecimal():
+        if has_only_period:
+            return "flost"
+        else:
+            return "int"
+    return "char*"
+
 def predict_cast(value):
     target = str(value)
     if not target:

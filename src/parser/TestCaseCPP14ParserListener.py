@@ -73,14 +73,21 @@ class TestCaseCPP14ParserListener(CPP14ParserListener):
                     target_value_ctx = variable["value_ctx"]
                 # 値と式とで型が異なる階層まで潜る
                 value_ctx = descend(target_value_ctx)
+                # 値が見つかった場合、それを期待出力とする
                 if value_ctx.getChildCount() <= 2:
-                    # 値が見つかった場合、それを期待出力とする
-                    testcase["expected"] = {
-                        "type": variable["type"],
-                        "value": cast(target_value_ctx.getText(), variable["type"]),
-                    }
+                    if value_ctx.getChildCount() == 0 or value_ctx.getText()[0] == "-":
+                        value = target_value_ctx.getText()
+                        testcase["expected"] = {
+                            "type": predict_type(value),
+                            "value": value,
+                        }
+                    else:
+                        testcase["expected"] = {
+                            "type": variable["type"],
+                            "value": cast(target_value_ctx.getText(), variable["type"]),
+                        }
+                # 式が見つかった場合、それをテスト対象の呼び出しとする
                 else:
-                    # 式が見つかった場合、それをテスト対象の呼び出しとする
                     try:
                         testcase["arguments"] = [predict_cast(child.getText()) for child in value_ctx.getChild(2).getChild(0).getChildren() if type(child) is CPP14Parser.InitializerClauseContext]
                     except:
