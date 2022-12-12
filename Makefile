@@ -27,7 +27,7 @@ make = make --no-print-directory
 
 run:
 # || : で成功したことにして次の処理に移る
-	@git switch ${GENERATE_BRANCH}
+	@git switch -c generate || git switch generate
 	@${make} close_log || :
 	@python3 -Bm src
 
