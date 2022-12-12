@@ -37,14 +37,15 @@ merge:
 	@git commit -m "generate ${TIMESTAMP}"
 # リファクタリングブランチを優先する
 	@git switch -c ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH}
-	@git merge ${REFACTORING_BRANCH}
-	@git checkout --theirs *
+	@git merge ${REFACTORING_BRANCH} || :
+	@git checkout --theirs * || :
 	@git add *
 	@git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}"
 # 自動生成ブランチを優先する
 	@git switch ${GENERATE_BRANCH}
 	@git switch -c ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH}
-	@git metge ${REFACTORING_BRANCH}
+	@git metge ${REFACTORING_BRANCH} || :
+	@git checkout --ours * || :
 	@git add *
 	@git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}"
 	@make refactor
