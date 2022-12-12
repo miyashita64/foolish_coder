@@ -38,7 +38,7 @@ refactor:
 
 approve:
 	@cp ${FOOLISH_WORK_PATH}/* ${TARGET_PROJECT_SOURCE_PATH}
-	@git add *
+	@git add .
 	@git commit -m "refactor ${TIMESTAMP}" 2>/dev/null || :
 	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
 
@@ -100,29 +100,29 @@ endif
 
 merge:
 	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
-	@git add * 2>/dev/null || :
+	@git add . 2>/dev/null || :
 	@git commit -m "generate ${TIMESTAMP}" 2>/dev/null || :
 # リファクタリングブランチを優先する
 	@git branch generate 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || :
-	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add * && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 	@${make} is_test_ok
 # テストをパスした場合
 ifneq ($(shell cat test_result_tmp.txt),)
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH}"
 	@git switch ${GENERATE_BRANCH}
-	@git merge ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add * && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 else
 # 自動生成ブランチを優先する
 	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || :
-	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --ours * && git add * && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --ours * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
 	@${make} is_test_ok
 # テストをパスした場合
 ifneq ($(shell cat test_result_tmp.txt),)
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH}"
 	@git switch ${GENERATE_BRANCH}
-	@git merge ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null && git restore --theirs * && git add * && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 else
 # 自動生成用にブランチを戻る
 	@git switch ${GENERATE_BRANCH}
