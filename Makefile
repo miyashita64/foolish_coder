@@ -103,11 +103,11 @@ merge:
 	@git add . 2>/dev/null || :
 	@git commit -m "generate ${TIMESTAMP}" 2>/dev/null || :
 # リファクタリングブランチを優先する
+	@mv test_result_tmp.txt test_result_tmp_${TIMESTAMP}.txt
 	@git branch generate 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || :
 	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
-	@${make} is_test_ok
-	@echo $(shell cat test_result_tmp.txt)
+	@${make} is_test_ok && echo $(shell cat test_result_tmp.txt)
 # テストをパスした場合
 ifneq ($(shell cat test_result_tmp.txt),)
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH}"
@@ -115,11 +115,11 @@ ifneq ($(shell cat test_result_tmp.txt),)
 	@git merge ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 else
 # 自動生成ブランチを優先する
+	@mv test_result_tmp.txt test_result_tmp_${TIMESTAMP}.txt
 	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || :
 	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --ours * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
-	@${make} is_test_ok
-	@echo $(shell cat test_result_tmp.txt)
+	@${make} is_test_ok && echo $(shell cat test_result_tmp.txt)
 # テストをパスした場合
 ifneq ($(shell cat test_result_tmp.txt),)
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH}"

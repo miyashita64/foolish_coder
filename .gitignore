@@ -5,9 +5,8 @@ target_project/src/*
 target_project/test/*
 
 test_result_tmp.txt
+*.txt
 
 !build/.gitkeep
-!logs/errors/.gitkeep
-!logs/results/.gitkeep
 !target_project/src/.gitkeep
 !target_project/test/.gitkeep
