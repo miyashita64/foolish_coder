@@ -1,5 +1,9 @@
-target_project/build/
-target_project/logs/
-target_project/results/
+build/*
+!build/.gitkeep
+logs/errors/*.txt
+logs/results/*.txt
+target_project/src/*.h
+target_project/src/*.cpp
+target_project/test/*.cpp
 download/
 test_result_tmp.txt

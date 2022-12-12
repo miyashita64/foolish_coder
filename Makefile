@@ -9,11 +9,11 @@ TARGET_PROJECT_SOURCE_PATH = ${TARGET_PROJECT_PATH}/src
 # 対象プロジェクトのテストコードのディレクトリパス
 TARGET_PROJECT_TEST_PATH = ${TARGET_PROJECT_PATH}/test
 # FoolishCoderがテストを実行する際にファイルを展開するパス
-BUILD_SPACE_PATH = ${TARGET_PROJECT_PATH}/build
+BUILD_SPACE_PATH = build
 # FoolishCoderがビルド・テストのログを格納するパス
-BUILD_LOG_PATH = ${TARGET_PROJECT_PATH}/logs
+BUILD_LOG_PATH = logs/errors
 # FoolishCoderが編集後のプロジェクトを実行ログを格納するパス
-EXECUTE_LOG_PATH = ${TARGET_PROJECT_PATH}/results
+EXECUTE_LOG_PATH = logs/results
 
 # リファクタリング用ブランチ名
 REFACTORING_BRANCH = refactor
@@ -30,6 +30,7 @@ run:
 	@git switch -c generate 2>/dev/null || git switch generate || :
 	@${make} close_log || :
 	@python3 -Bm src
+	@${make} merge
 
 refactor:
 	@git branch -D ${REFACTORING_BRANCH} 2>/dev/null || :
@@ -76,11 +77,11 @@ clear:
 	rm -rf ${BUILD_LOG_PATH}
 	rm -rf ${EXECUTE_LOG_PATH}
 	rm -rf ${FOOLISH_WORK_PATH}/*
-	git switch develop 2>/dev/null || :
-	@git branch -D {GENERATE_BRANCH} 2>/dev/null || :
-	@git branch -D {REFACTORING_BRANCH} 2>/dev/null || :
-	@git branch -D {GENERATE_BRANCH}_{REFACTORING_BRANCH} 2>/dev/null || :
-	@git branch -D {GENERATE_BRANCH}_{GENERATE_BRANCH} 2>/dev/null || :
+	git switch develop
+	@git branch -D ${GENERATE_BRANCH} 2>/dev/null || :
+	@git branch -D ${REFACTORING_BRANCH} 2>/dev/null || :
+	@git branch -D ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || :
+	@git branch -D ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || :
 	touch ${FOOLISH_WORK_PATH}/.gitkeep
 
 build_space:
@@ -104,27 +105,28 @@ merge:
 # リファクタリングブランチを優先する
 	@git branch generate 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || :
-	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git checkout --theirs * && git add * && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add * && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 	@${make} is_test_ok
 # テストをパスした場合
 ifneq ($(shell cat test_result_tmp.txt),)
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH}"
 	@git switch ${GENERATE_BRANCH}
-	@git merge ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || :
+	@git merge ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add * && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 else
 # 自動生成ブランチを優先する
 	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || :
-	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git checkout --ours * && git add * && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --ours * && git add * && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
 	@${make} is_test_ok
 # テストをパスした場合
 ifneq ($(shell cat test_result_tmp.txt),)
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH}"
 	@git switch ${GENERATE_BRANCH}
-	@git merge ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || :
+	@git merge ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null && git restore --theirs * && git add * && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 else
 # 自動生成用にブランチを戻る
 	@git switch ${GENERATE_BRANCH}
 	@echo "Faild merge refactoring data."
 endif
 endif
+	@${make} refactor

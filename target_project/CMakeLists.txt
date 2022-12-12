@@ -8,7 +8,7 @@ project(FoolishCoder CXX)
 find_package(GTest REQUIRED)
 
 # 対象とするファイルのパスを設定する
-set(BUILD_SPACE_PATH build)
+set(BUILD_SPACE_PATH ../build)
 file(GLOB TARGET_HEADER_FILES ${BUILD_SPACE_PATH}/*.h)
 file(GLOB TARGET_SOURCE_AND_TEST_FILES ${BUILD_SPACE_PATH}/*.cpp)
 
