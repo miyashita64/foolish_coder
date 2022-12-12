@@ -39,7 +39,11 @@ class Function:
         branch = 0
         for statement in self.statements:
             if type(statement) is CondExpression:
-                code += statement.get_code(nest+1, self.arguments[0].name, branch)
+                if statement is self.statements[-1]:
+                    code += statement.get_code(nest+1, self.arguments[0].name, branch, is_last = True)
+                else:
+                    code += statement.get_code(nest+1, self.arguments[0].name, branch)
+                    
                 branch += 1
         code += indent + "}\n"
         return code

@@ -85,7 +85,7 @@ def predict_type(value):
 
     if target.isdecimal():
         if has_only_period:
-            return "flost"
+            return "float"
         else:
             return "int"
     return "char*"

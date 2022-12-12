@@ -3,16 +3,12 @@
 namespace foolish_coder {
     TEST(GetFeeTest, GetYoungestChildFeeTest){
         FeeCalculator fee_calculator;
-        EXPECT_EQ(fee_calculator.getFee(0), 0);}
+        EXPECT_EQ(fee_calculator.getFee(0), 300);}
     TEST(GetFeeTest, GetEldestChildFeeTest){
         FeeCalculator fee_calculator;
-        EXPECT_EQ(fee_calculator.getFee(12), 0);}
-    TEST(GetFeeTest, GetYoungestYouthFeeTest){
-        FeeCalculator fee_calculator;
-        EXPECT_EQ(fee_calculator.getFee(13), 300);}
-    TEST(GetFeeTest, GetEldestYouthFeeTest){
-        FeeCalculator fee_calculator;
-        EXPECT_EQ(fee_calculator.getFee(19), 300);}
+        int actual = fee_calculator.getFee(19);
+        int expected = 300;
+        EXPECT_EQ(actual, expected);}
     TEST(GetFeeTest, GetYoungestAdultFeeTest){
         FeeCalculator fee_calculator;
         EXPECT_EQ(fee_calculator.getFee(20), 500);}
@@ -24,7 +20,7 @@ namespace foolish_coder {
         EXPECT_EQ(fee_calculator.getFee(60), 300);}
     TEST(GetFeeTest, GetEldestOldFeeTest){
         FeeCalculator fee_calculator;
-        EXPECT_EQ(fee_calculator.getFee(120));}
+        EXPECT_EQ(fee_calculator.getFee(120), 300);}
     TEST(GetFeeTest, GetTooYoungFeeTest){
         FeeCalculator fee_calculator;
         EXPECT_EQ(fee_calculator.getFee(-1), -1);}
