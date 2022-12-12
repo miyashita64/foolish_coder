@@ -2,3 +2,4 @@ target_project/build/
 target_project/logs/
 target_project/results/
 download/
+test_result_tmp.txt
