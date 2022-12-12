@@ -48,11 +48,9 @@ merge:
 	@git checkout --ours * || :
 	@git add *
 	@git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}"
-	@make refactor
+	@git switch ${GENERATE_BRANCH}
 
 refactor:
-	@git add *
-	@git commit -m "generate ${TIMESTAMP}"
 	@git branch -D ${REFACTORING_BRANCH}
 	@git switch -c ${REFACTORING_BRANCH}
 
