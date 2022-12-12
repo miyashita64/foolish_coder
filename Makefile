@@ -32,33 +32,33 @@ run:
 	@python3 -Bm src
 
 merge:
-	@git switch {GENERATE_BRANCH}
+	@git switch ${GENERATE_BRANCH}
 	@git add *
-	@git commit -m "generate {TIMESTAMP}"
+	@git commit -m "generate ${TIMESTAMP}"
 # リファクタリングブランチを優先する
-	@git switch -c {GENERATE_BRANCH}_ahead_{REFACTORING_BRANCH}
-	@git merge {REFACTORING_BRANCH}
+	@git switch -c ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH}
+	@git merge ${REFACTORING_BRANCH}
 	@git checkout --theirs *
 	@git add *
-	@git commit -m "merge ahead {REFACTORING_BRANCH} {TIMESTAMP}"
+	@git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}"
 # 自動生成ブランチを優先する
-	@git switch {GENERATE_BRANCH}
-	@git switch -c {GENERATE_BRANCH}_ahead_{GENERATE_BRANCH}
-	@git metge {REFACTORING_BRANCH}
+	@git switch ${GENERATE_BRANCH}
+	@git switch -c ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH}
+	@git metge ${REFACTORING_BRANCH}
 	@git add *
-	@git commit -m "merge ahead {GENERATE_BRANCH} {TIMESTAMP}"
+	@git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}"
 	@make refactor
 
 refactor:
 	@git add *
-	@git commit -m "generate {TIMESTAMP}"
-	@git branch -D {REFACTORING_BRANCH}
-	@git switch -c {REFACTORING_BRANCH}
+	@git commit -m "generate ${TIMESTAMP}"
+	@git branch -D ${REFACTORING_BRANCH}
+	@git switch -c ${REFACTORING_BRANCH}
 
 approve:
 	@cp ${FOOLISH_WORK_PATH}/* ${TARGET_PROJECT_SOURCE_PATH}
 	@git add *
-	@git commit -m "refactor {TIMESTAMP}"
+	@git commit -m "refactor ${TIMESTAMP}"
 	@git switch ${GENERATE_BRANCH}
 
 test:
