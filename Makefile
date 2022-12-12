@@ -107,6 +107,7 @@ merge:
 	@git switch -c ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || :
 	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 	@${make} is_test_ok
+	@echo $(shell cat test_result_tmp.txt)
 # テストをパスした場合
 ifneq ($(shell cat test_result_tmp.txt),)
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH}"
@@ -118,6 +119,7 @@ else
 	@git switch -c ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || :
 	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --ours * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
 	@${make} is_test_ok
+	@echo $(shell cat test_result_tmp.txt)
 # テストをパスした場合
 ifneq ($(shell cat test_result_tmp.txt),)
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH}"
