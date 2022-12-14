@@ -27,13 +27,13 @@ make = make --no-print-directory
 
 usage:
 	@echo "Please input argument."
-	@echo "       run : generate code to pass test"
+	@echo "  generate : generate code to pass test"
 	@echo "  refactor : start refactor"
 	@echo "   approve : approve update to generated code"
 	@echo "      test : do test"
 	@echo "     clesr : delete files created for generate"
 
-run:
+generate:
 # || : で成功したことにして次の処理に移る
 	@git switch -c generate 2>/dev/null || git switch generate || :
 	@${make} close_log || :
@@ -49,6 +49,8 @@ approve:
 	@git add .
 	@git commit -m "refactor ${TIMESTAMP}" 2>/dev/null || :
 	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
+	@git branch -D ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || :
+	@git branch -D ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || :
 
 test:
 	@echo "Running Test ..."
@@ -115,7 +117,7 @@ commit_generate:
 	@git commit -m "generate ${TIMESTAMP}" 2>/dev/null || :
 
 is_test_ok:
-	@{make} close_log
+	@${make} close_log || :
 	@cat ${EXECUTE_LOG_PATH}/latest_result.txt | tail -n 2 | grep "\[  PASSED  \]"
 
 merge_ahead_refactor:
