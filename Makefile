@@ -9,11 +9,11 @@ TARGET_PROJECT_SOURCE_PATH = ${TARGET_PROJECT_PATH}/src
 # 対象プロジェクトのテストコードのディレクトリパス
 TARGET_PROJECT_TEST_PATH = ${TARGET_PROJECT_PATH}/test
 # FoolishCoderがテストを実行する際にファイルを展開するパス
-BUILD_SPACE_PATH = build
+BUILD_SPACE_PATH = ${MAKEFILE_PATH}build
 # FoolishCoderがビルド・テストのログを格納するパス
-BUILD_LOG_PATH = logs/errors
+BUILD_LOG_PATH = ${MAKEFILE_PATH}logs/errors
 # FoolishCoderが編集後のプロジェクトを実行ログを格納するパス
-EXECUTE_LOG_PATH = logs/results
+EXECUTE_LOG_PATH = ${MAKEFILE_PATH}logs/results
 
 # リファクタリング用ブランチ名
 REFACTORING_BRANCH = refactor
@@ -24,6 +24,14 @@ GENERATE_BRANCH = generate
 TIMESTAMP = $(shell date +%Y%m%d%H%M%S)
 
 make = make --no-print-directory
+
+usage:
+	@echo "Please input argument."
+	@echo "       run : generate code to pass test"
+	@echo "  refactor : start refactor"
+	@echo "   approve : approve update to generated code"
+	@echo "      test : do test"
+	@echo "     clesr : delete files created for generate"
 
 run:
 # || : で成功したことにして次の処理に移る
@@ -45,35 +53,34 @@ approve:
 test:
 	@echo "Running Test ..."
 	@${make} build_space
-	cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH}
-	cd ${BUILD_SPACE_PATH} && cmake --build .
-	cd ${BUILD_SPACE_PATH} && ./main
-
-is_test_ok:
-	@${make} test 2> /dev/null 1| tail -n 2 | grep "\[  PASSED  \]" > test_result_tmp.txt || :
+	@cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH} > /dev/null
+	@cd ${BUILD_SPACE_PATH} && cmake --build .
+	@cd ${BUILD_SPACE_PATH} && ./main
 
 close_log:
 	@echo "Running Test ..."
 	@${make} build_space
-	@cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH} &> /dev/null
+	@cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH} > /dev/null
 	@mkdir -p ${BUILD_LOG_PATH}
-	@cd ${BUILD_SPACE_PATH} && cmake --build . &> ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
-	@cp ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt ${BUILD_LOG_PATH}/latest_error.txt
+	@cd ${BUILD_SPACE_PATH} && cmake --build . > ${BUILD_LOG_PATH}/latest_error.txt
+	@cp ${BUILD_LOG_PATH}/latest_error.txt ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
 	@mkdir -p ${EXECUTE_LOG_PATH}
-	@cd ${BUILD_SPACE_PATH} && ./main &> ${EXECUTE_LOG_PATH}/${TIMESTAMP}.txt
+	@cd ${BUILD_SPACE_PATH} && ./main 1> ${EXECUTE_LOG_PATH}/latest_result.txt || :
+	@cp ${EXECUTE_LOG_PATH}/latest_result.txt ${EXECUTE_LOG_PATH}/${TIMESTAMP}_result.txt
 
 open_log:
 	@echo "Running Test ..."
 	@${make} build_space
 	cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH}
 	@mkdir -p ${BUILD_LOG_PATH}
-	cd ${BUILD_SPACE_PATH} && cmake --build . 2>&1 | tee ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
-	@cp ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt ${BUILD_LOG_PATH}/latest_error.txt
+	cd ${BUILD_SPACE_PATH} && cmake --build . 2>&1 | tee ${BUILD_LOG_PATH}/latest_error.txt
+	@cp ${BUILD_LOG_PATH}/latest_error.txt ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt 
 	@mkdir -p ${EXECUTE_LOG_PATH}
-	cd ${BUILD_SPACE_PATH} && ./main 2>&1 | tee ${EXECUTE_LOG_PATH}/${TIMESTAMP}.txt
+	cd ${BUILD_SPACE_PATH} && ./main 2>&1 | tee ${EXECUTE_LOG_PATH}/latest_result.txt
+	@cp ${EXECUTE_LOG_PATH}/latest_result.txt ${EXECUTE_LOG_PATH}/${TIMESTAMP}_result.txt
 
 clear:
-	rm -rf ${BUILD_SPACE_PATH}
+	rm -rf ${BUILD_SPACE_PATH}/*
 	rm -rf ${BUILD_LOG_PATH}
 	rm -rf ${EXECUTE_LOG_PATH}
 	rm -rf ${FOOLISH_WORK_PATH}/*
@@ -99,36 +106,36 @@ ifneq ($(wildcard ${FOOLISH_WORK_PATH}/*), )
 endif
 
 merge:
-	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
+	@${make} commit_generate
+	@python3 -B scripts/merge.py
+	@${make} refactor
+
+commit_generate:
 	@git add . 2>/dev/null || :
 	@git commit -m "generate ${TIMESTAMP}" 2>/dev/null || :
+
+is_test_ok:
+	@{make} close_log
+	@cat ${EXECUTE_LOG_PATH}/latest_result.txt | tail -n 2 | grep "\[  PASSED  \]"
+
+merge_ahead_refactor:
 # リファクタリングブランチを優先する
-	@mv test_result_tmp.txt test_result_tmp_${TIMESTAMP}.txt
-	@git branch generate 2>/dev/null || :
+	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || :
-	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
-	@${make} is_test_ok && echo $(shell cat test_result_tmp.txt)
-# テストをパスした場合
-ifneq ($(shell cat test_result_tmp.txt),)
+	@git merge ${REFACTORING_BRANCH} 2>/dev/null || : && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
+
+merge_ahead_refactor_approve:
+# リファクタリングを優先したブランチがテストをパスした際の処理
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH}"
-	@git switch ${GENERATE_BRANCH}
 	@git merge ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
-else
+
+merge_ahead_generate:
 # 自動生成ブランチを優先する
-	@mv test_result_tmp.txt test_result_tmp_${TIMESTAMP}.txt
 	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || :
-	@git merge ${REFACTORING_BRANCH} 2>/dev/null && git restore --ours * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
-	@${make} is_test_ok && echo $(shell cat test_result_tmp.txt)
-# テストをパスした場合
-ifneq ($(shell cat test_result_tmp.txt),)
+	@git merge ${REFACTORING_BRANCH} 2>/dev/null || : && git restore --ours * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
+
+merge_ahead_generate_approve:
+# 自動生成を優先したブランチがテストをパスした際の処理
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH}"
-	@git switch ${GENERATE_BRANCH}
-	@git merge ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
-else
-# 自動生成用にブランチを戻る
-	@git switch ${GENERATE_BRANCH}
-	@echo "Faild merge refactoring data."
-endif
-endif
-	@${make} refactor
+	@git merge ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :

@@ -7,6 +7,5 @@ target_project/test/*
 test_result_tmp.txt
 *.txt
 
-!build/.gitkeep
 !target_project/src/.gitkeep
 !target_project/test/.gitkeep
