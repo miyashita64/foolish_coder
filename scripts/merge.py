@@ -12,6 +12,7 @@ def is_test_ok():
     TEST_OK_KEYWORD = "[  PASSED  ]"
     time.sleep(0.3)
     test_result = subprocess.run(["make", "--no-print-directory", "is_test_ok"], stdout=PIPE, stderr=PIPE).stdout.decode('utf-8')
+    print("Testing ...")
     print("======================================")
     print(test_result)
     print("======================================")
@@ -19,27 +20,29 @@ def is_test_ok():
 
 def merge():
     # リファクタリング優先でコンフリクトを解決する
-    print("refactorブランチをマージします")
+    print("Merging branch named \"refactor\" ... ", end="")
     merge_target = ""
     subprocess.run(["make", "--no-print-directory", "merge_ahead_refactor"])
-    print("refactorを優先してマージしました")
+    print("Succeed!!")
     if is_test_ok():
         merge_target = "refactor"
-        print(f"{merge_target}がテストに通りました")
+        print(f"\"{merge_target}\" passed tests!\n")
     # 自動生成優先でコンフリクトを解決する
     else:
-        print("テストに失敗しました")
-        print("generateブランチをマージします")
+        print(f"\"{merge_target}\" faild tests.\n")
+        print("Merging branch named \"generate\" ... ", end="")
         subprocess.run(["make", "--no-print-directory", "merge_ahead_generate"])
-        print("generateを優先してマージしました")
+        print("Succeed!!")
         if is_test_ok():
             merge_target = "generate"
-            print(f"{merge_target}がテストに通りました")
+            print(f"\"{merge_target}\" passed tests!\n")
     subprocess.run(["git", "switch", "generate"])
     if merge_target != "":
+        print(f"Merging branch named \"{merge_target}\" ... ", end="")
         subprocess.run(["make", "--no-print-directory", f"merge_ahead_{merge_target}_approve"])
+        print("Succeed!!")
     else:
-        print("どれもテストに通ってない！！おかしい！！")
+        print("!!!!!!!!テストをパスできるブランチがない!!おかしい!!!!!!!!")
 
 if __name__ == "__main__":
     merge()

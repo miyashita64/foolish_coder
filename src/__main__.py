@@ -6,7 +6,6 @@
 
 import os
 import glob
-import time
 
 from src.error_analyzer.error_analyzer import ErrorAnalyzer
 from src.error_analyzer.error_handler import ErrorHandler
@@ -16,7 +15,6 @@ from src.structure.file import File
 
 def main():
     print("\nFoolish coding...\n")
-    start_time = time.time()
 
     BUILD_LOG_FILE_NAME = "latest_error.txt"
     BUILD_LOG_DIR_PATH = "target_project/logs/"
@@ -64,7 +62,6 @@ def main():
             target_source_file = File(patched_class.source_file_name)
             target_source_file.write(patched_class.get_source_code())
 
-    print("\nCompleted!!\n")
-    print(f"TIME: {time.time()-start_time}")
+    print("\nCompleted Generating!!\n")
 
 main()
