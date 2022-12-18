@@ -124,20 +124,20 @@ merge_ahead_refactor:
 # リファクタリングブランチを優先する
 	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || :
-	@git merge ${REFACTORING_BRANCH} 2>/dev/null || : && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${REFACTORING_BRANCH} 2>/dev/null || : && git checkout --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 
 merge_ahead_refactor_approve:
 # リファクタリングを優先したブランチがテストをパスした際の処理
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH}"
-	@git merge ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${GENERATE_BRANCH}_ahead_${REFACTORING_BRANCH} 2>/dev/null || : && git checkout --theirs * && git add . && git commit -m "merge ahead ${REFACTORING_BRANCH} ${TIMESTAMP}" || :
 
 merge_ahead_generate:
 # 自動生成ブランチを優先する
 	@git switch ${GENERATE_BRANCH} 2>/dev/null || :
 	@git switch -c ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || :
-	@git merge ${REFACTORING_BRANCH} 2>/dev/null || : && git restore --ours * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${REFACTORING_BRANCH} 2>/dev/null || : && git checkout --ours * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
 
 merge_ahead_generate_approve:
 # 自動生成を優先したブランチがテストをパスした際の処理
 	@echo "Passed test by branch ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH}"
-	@git merge ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null && git restore --theirs * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
+	@git merge ${GENERATE_BRANCH}_ahead_${GENERATE_BRANCH} 2>/dev/null || : && git checkout --theirs * && git add . && git commit -m "merge ahead ${GENERATE_BRANCH} ${TIMESTAMP}" || :
