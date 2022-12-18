@@ -17,7 +17,7 @@ def main():
     print("\nFoolish coding...\n")
 
     BUILD_LOG_FILE_NAME = "latest_error.txt"
-    BUILD_LOG_DIR_PATH = "target_project/logs/"
+    BUILD_LOG_DIR_PATH = "logs/errors/"
     TEST_CODE_DIR_PATH = "target_project/test/"
     SOURCE_CODE_DIR_PATH = "results/"
 
@@ -29,8 +29,8 @@ def main():
     if no_file_error_count > 0:
         # ファイルが見つからないエラーは、テストケースを通さないため再実行する
         ErrorHandler.handle(errors)
-        os.system("make run")
-        exit()
+        os.system("make --no-print-directory generate")
+        exit(1)
     print()
     print(f"No such {no_file_error_count} files.")
     print(f"No such {no_class_error_count} classes.")
@@ -47,8 +47,8 @@ def main():
         for class_name in set([testcase["target_class_name"] for testcase in testcases]):
             # エラーが出ているクラスについてのみ扱う
             if class_name not in error_classe_names:
-                # continue
-                pass
+                print("\nNo error No need Generating.\n")
+                exit(1)
             # ソースコード解析
             source_code_path = f"{SOURCE_CODE_DIR_PATH}{class_name}.h"
             source_class_tmps = ParseController.parse_source(source_code_path)

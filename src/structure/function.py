@@ -19,13 +19,11 @@ class Function:
         indent = "\t" * nest
         code = f"{indent}{self.type} {self.name}({self.get_args_code()})"
         code += "{\n"
-        code += f"{indent}\t// START GENERATED CODE"
         branch = 0
         for statement in self.statements:
             if type(statement) is CondExpression:
                 code += statement.get_code(nest+1, self.arguments[0].name, branch)
                 branch += 1
-        code += f"{indent}\t// ENd GENERATED CODE"
         code += indent + "}\n"
         return code
 
@@ -38,7 +36,6 @@ class Function:
         indent = "\t" * nest
         code = f"{indent}{self.type} {self.owner}::{self.name}({self.get_args_code()})"
         code += "{\n"
-        code += f"{indent}\t// START GENERATED CODE\n"
         branch = 0
         for statement in self.statements:
             if type(statement) is CondExpression:
@@ -48,7 +45,6 @@ class Function:
                     code += statement.get_code(nest+1, self.arguments[0].name, branch)
                     
                 branch += 1
-        code += f"{indent}\t// ENd GENERATED CODE\n"
         code += indent + "}\n"
         return code
 

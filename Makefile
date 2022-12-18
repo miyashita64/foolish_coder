@@ -37,13 +37,13 @@ generate:
 # || : で成功したことにして次の処理に移る
 	@git switch -c generate 2>/dev/null || git switch generate || :
 	@${make} close_log || :
-	@python3 -Bm src
-	@${make} merge
+	@python3 -Bm src && ${make} merge || :
+	@${make} refactor
 
 refactor:
 	@git branch -D ${REFACTORING_BRANCH} 1>/dev/null 2>/dev/null || :
-	@git switch -c ${REFACTORING_BRANCH} 1>/dev/null 2>/dev/null
-	@echo "\nPlease refactoring to generated files in \"results/\"."
+	@git switch -c ${REFACTORING_BRANCH} 1>/dev/null 2>/dev/null || :
+	@echo "\nPlease refactoring to generated files in \"results/\" and execute \"make approve\"."
 
 approve:
 	@cp ${FOOLISH_WORK_PATH}/* ${TARGET_PROJECT_SOURCE_PATH}
@@ -65,7 +65,7 @@ close_log:
 	@${make} build_space
 	@cd ${BUILD_SPACE_PATH} && cmake ${TARGET_PROJECT_PATH} > /dev/null
 	@mkdir -p ${BUILD_LOG_PATH}
-	@cd ${BUILD_SPACE_PATH} && cmake --build . > ${BUILD_LOG_PATH}/latest_error.txt
+	@cd ${BUILD_SPACE_PATH} && cmake --build . 2> ${BUILD_LOG_PATH}/latest_error.txt 1> /dev/null || :
 	@cp ${BUILD_LOG_PATH}/latest_error.txt ${BUILD_LOG_PATH}/${TIMESTAMP}_error.txt
 	@mkdir -p ${EXECUTE_LOG_PATH}
 	@cd ${BUILD_SPACE_PATH} && ./main 1> ${EXECUTE_LOG_PATH}/latest_result.txt || :
@@ -111,7 +111,6 @@ endif
 merge:
 	@${make} commit_generate
 	@python3 -B scripts/merge.py
-	@${make} refactor
 
 commit_generate:
 	@git add . 1>/dev/null 2>/dev/null || :
