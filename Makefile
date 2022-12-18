@@ -31,7 +31,7 @@ usage:
 	@echo "  refactor : start refactor"
 	@echo "   approve : approve update to generated code"
 	@echo "      test : do test"
-	@echo "     clesr : delete files created for generate"
+	@echo "     clear : delete files created for generate"
 
 generate:
 # || : で成功したことにして次の処理に移る
