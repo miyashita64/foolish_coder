@@ -23,8 +23,6 @@ def merge():
     merge_target = ""
     subprocess.run(["make", "--no-print-directory", "merge_ahead_refactor"])
     print("refactorを優先してマージしました")
-    print("==TEST RESULT==")
-    print(is_test_ok())
     if is_test_ok():
         merge_target = "refactor"
         print(f"{merge_target}がテストに通りました")
@@ -34,8 +32,6 @@ def merge():
         print("generateブランチをマージします")
         subprocess.run(["make", "--no-print-directory", "merge_ahead_generate"])
         print("generateを優先してマージしました")
-        print("==TEST RESULT==")
-        print(is_test_ok())
         if is_test_ok():
             merge_target = "generate"
             print(f"{merge_target}がテストに通りました")
