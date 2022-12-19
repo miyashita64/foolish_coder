@@ -95,7 +95,7 @@ clear:
 	touch ${FOOLISH_WORK_PATH}/.gitkeep
 
 build_space:
-	@rm -rf ${BUILD_SPACE_PATH}
+# @rm -rf ${BUILD_SPACE_PATH}
 	@mkdir -p ${BUILD_SPACE_PATH}
 # ifeqやifneqにインデントを入れると動かないらしい
 ifneq ($(wildcard ${TARGET_PROJECT_SOURCE_PATH}/*), )
