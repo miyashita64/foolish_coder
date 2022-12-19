@@ -6,6 +6,7 @@
 
 import numpy as np
 from src.structure.cond_expression import CondExpression
+from src.structure.if_statement import IfStatement
 from src.structure.variable import Variable
 from src.structure.function import Function
 from src.structure.cpp_class import CPPClass
@@ -71,7 +72,7 @@ class SourceCodeGenerator:
                 sorted_testcases = sorted(unique_testcases, key=lambda testcase: max([testcase["arguments"][0]]))
                 method_info["testcases"] = sorted_testcases
 
-                # テストケースを同じ期待出力毎に集約する形で、ソースコードを設計する
+                # 同じ期待出力を求める隣接するテストケースを集約する形で、条件式を生成する
                 cond_expressions = []
                 cond_expression = CondExpression(None, None, None)
                 for testcase in method_info["testcases"]:
@@ -87,8 +88,17 @@ class SourceCodeGenerator:
                         cond_expression.max = testcase["arguments"][0]
                 # 最後ループのCondExpressionを追加する
                 cond_expressions.append(cond_expression)
+                # 期待出力毎に条件式をまとめる
+                if_statement_tmps = {}
+                for cond in cond_expressions:
+                    if cond.value in if_statement_tmps.keys():
+                        if_statement_tmps[cond.value].append(cond)
+                    else:
+                        if_statement_tmps[cond.value] = [cond]
+                # if文を生成する
+                if_statements = [IfStatement(if_statement_tmps[value]) for value in if_statement_tmps]
                 # 関数の中間データを生成する
-                function = Function(method_name, class_name, method_info["type"],  method_info["args"], cond_expressions)
+                function = Function(method_name, class_name, method_info["type"],  method_info["args"], if_statements)
                 class_info["function_members"].append(function)
             # CPPクラスの中間データを生成する
             cpp_class = CPPClass(class_name, function_members=class_info["function_members"])
