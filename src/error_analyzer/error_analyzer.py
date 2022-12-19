@@ -10,7 +10,7 @@ from src.structure.file import File
 class ErrorAnalyzer:
     @staticmethod
     def analyze(log_file_name, log_dir_path):
-        """指定されたパスのログを解析する"""
+        """指定されたパスのログを解析する."""
         log_file = File(log_file_name, log_dir_path)
         log_text = log_file.read()
         # 存在しないファイル名のリスト
@@ -23,6 +23,19 @@ class ErrorAnalyzer:
             "no_class_errors": no_class_errors,
             "no_member_errors": no_member_errors,
         }
+
+    @staticmethod
+    def get_faild_testcase_count(log_file_name, log_dir_path):
+        """失敗したテストケースの数を取得する."""
+        log_file = File(log_file_name, log_dir_path)
+        log_text = log_file.read()
+        for row in log_text.split("\n"):
+            if "FAILED TEST" in row:
+                if len(row.split(" ")) >= 1:
+                    count = row.split(" ")[1]
+                    if count.isdecimal():
+                        return int(count)
+        return 0
 
     @staticmethod
     def get_error_by_no_such_file(log_text):

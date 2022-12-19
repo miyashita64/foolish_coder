@@ -18,6 +18,8 @@ def main():
 
     BUILD_LOG_FILE_NAME = "latest_error.txt"
     BUILD_LOG_DIR_PATH = "logs/errors/"
+    TEST_LOG_FILE_NAME = "latest_result.txt"
+    TEST_LOG_DIR_PATH = "logs/results/"
     TEST_CODE_DIR_PATH = "target_project/test/"
     SOURCE_CODE_DIR_PATH = "results/"
 
@@ -31,12 +33,14 @@ def main():
         ErrorHandler.handle(errors)
         os.system("make --no-print-directory generate")
         exit(1)
+    faild_test_count = ErrorAnalyzer.get_faild_testcase_count(TEST_LOG_FILE_NAME, TEST_LOG_DIR_PATH)
     print()
     print(f"No such {no_file_error_count} files.")
     print(f"No such {no_class_error_count} classes.")
-    print(f"No such {no_member_error_count} members.\n")
+    print(f"No such {no_member_error_count} members.")
+    print(f"Faild {faild_test_count} testcases.\n")
 
-    error_classe_names = [error["class_name"] for error in errors["no_class_errors"]] + [error["class_name"] for error in errors["no_member_errors"]]
+    error_classes_names = [error["class_name"] for error in errors["no_class_errors"]] + [error["class_name"] for error in errors["no_member_errors"]]
 
     # テストコードを1つずつ解析する
     test_file_paths = glob.glob(f"{TEST_CODE_DIR_PATH}*.cpp")
@@ -46,7 +50,7 @@ def main():
         source_classes = []
         for class_name in set([testcase["target_class_name"] for testcase in testcases]):
             # エラーが出ているクラスについてのみ扱う
-            if class_name not in error_classe_names:
+            if class_name not in error_classes_names and faild_test_count == 0:
                 print("\nNo error No need Generating.\n")
                 exit(1)
             # ソースコード解析
