@@ -59,7 +59,7 @@ class ErrorAnalyzer:
                     # 未定義のクラス名を抽出
                     no_declared_class = row.split("error: ‘")[1].split("’ was not declared in this scope")[0]
                     # 失敗したテストケース名を抽出
-                    fatal_test_name, fatal_testcase_name, _ = pre_row.split(": In member function ‘virtual void ")[1].split("::")[1].split("_")
+                    fatal_test_name, fatal_testcase_name, *_ = pre_row.split(": In member function ‘virtual void ")[1].split("::")[1].split("_")
                     fatals.append({
                         "test_name": fatal_test_name,
                         "testcase_name": fatal_testcase_name,
